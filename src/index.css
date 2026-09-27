@@ -1,0 +1,184 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    background-color: #0a0d12;
+    color: #e2e8f0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background-color: #0a0d12;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #0f1319;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #2d3748;
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #4a5568;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-lg;
+  }
+
+  .panel-elevated {
+    @apply bg-slate-800/60 backdrop-blur-md border border-slate-700/60 rounded-xl shadow-xl;
+  }
+
+  .status-verified {
+    @apply text-emerald-400 bg-emerald-900/20 border border-emerald-700/30;
+  }
+
+  .status-warning {
+    @apply text-amber-400 bg-amber-900/20 border border-amber-700/30;
+  }
+
+  .status-critical {
+    @apply text-red-400 bg-red-900/20 border border-red-700/30;
+  }
+
+  .status-info {
+    @apply text-blue-400 bg-blue-900/20 border border-blue-700/30;
+  }
+
+  .btn-primary {
+    @apply bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-4 py-2 rounded-lg
+    transition-all duration-200 flex items-center gap-2 cursor-pointer border border-indigo-500/50
+    hover:shadow-lg hover:shadow-indigo-900/30 active:scale-95;
+  }
+
+  .btn-secondary {
+    @apply bg-slate-700/60 hover:bg-slate-700 text-slate-200 font-medium px-4 py-2 rounded-lg
+    transition-all duration-200 flex items-center gap-2 cursor-pointer border border-slate-600/50
+    hover:border-slate-500/70 active:scale-95;
+  }
+
+  .btn-danger {
+    @apply bg-red-900/40 hover:bg-red-900/70 text-red-300 font-medium px-4 py-2 rounded-lg
+    transition-all duration-200 flex items-center gap-2 cursor-pointer border border-red-700/40
+    hover:border-red-600/60 active:scale-95;
+  }
+
+  .metric-card {
+    @apply glass-panel p-4 flex flex-col gap-1;
+  }
+
+  .field-label {
+    @apply text-xs font-medium text-slate-400 uppercase tracking-wider;
+  }
+
+  .mono {
+    @apply font-mono;
+  }
+
+  .pipeline-step {
+    @apply flex items-center gap-3 py-2 px-3 rounded-lg transition-all duration-300;
+  }
+
+  .pipeline-step-pending {
+    @apply text-slate-500 bg-slate-800/20;
+  }
+
+  .pipeline-step-active {
+    @apply text-blue-300 bg-blue-900/20 border border-blue-700/30;
+  }
+
+  .pipeline-step-done {
+    @apply text-emerald-400 bg-emerald-900/10 border border-emerald-800/30;
+  }
+
+  .pipeline-step-failed {
+    @apply text-red-400 bg-red-900/10 border border-red-800/30;
+  }
+}
+
+@layer utilities {
+  .text-gradient-indigo {
+    @apply bg-gradient-to-r from-indigo-400 to-blue-400 bg-clip-text text-transparent;
+  }
+
+  .text-gradient-emerald {
+    @apply bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent;
+  }
+
+  .border-glow-indigo {
+    box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.3), 0 0 20px rgba(99, 102, 241, 0.1);
+  }
+
+  .border-glow-emerald {
+    box-shadow: 0 0 0 1px rgba(52, 211, 153, 0.3), 0 0 20px rgba(52, 211, 153, 0.1);
+  }
+
+  .border-glow-red {
+    box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.3), 0 0 20px rgba(248, 113, 113, 0.1);
+  }
+}
+
+/* Camera overlay animations */
+.corner-tl, .corner-tr, .corner-bl, .corner-br {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+}
+.corner-tl { top: 0; left: 0; border-top: 2px solid #4f6ef7; border-left: 2px solid #4f6ef7; }
+.corner-tr { top: 0; right: 0; border-top: 2px solid #4f6ef7; border-right: 2px solid #4f6ef7; }
+.corner-bl { bottom: 0; left: 0; border-bottom: 2px solid #4f6ef7; border-left: 2px solid #4f6ef7; }
+.corner-br { bottom: 0; right: 0; border-bottom: 2px solid #4f6ef7; border-right: 2px solid #4f6ef7; }
+
+@keyframes scanline {
+  0% { top: 0; }
+  100% { top: 100%; }
+}
+
+.scan-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(79, 110, 247, 0.8), transparent);
+  animation: scanline 2s linear infinite;
+}
+
+/* Spinner */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.spinner {
+  animation: spin 0.8s linear infinite;
+}
+
+/* Progress bar shimmer */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.1) 50%, transparent 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}

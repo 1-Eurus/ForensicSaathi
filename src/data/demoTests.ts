@@ -1,0 +1,225 @@
+/**
+ * Pre-seeded demo test records for the dashboard history and demo flow.
+ * These simulate tests already in the system before the live demo.
+ */
+
+import type { EvidencePackage, AuditEvent } from '../types';
+
+function fakeAudit(baseTime: number, operatorId: string): AuditEvent[] {
+  const t = (offsetSec: number) => new Date(baseTime + offsetSec * 1000).toISOString();
+  return [
+    { id: 'a1', timestamp: t(0),  event: 'Test session created',      actor: operatorId, category: 'SYSTEM',    detail: 'Protocol: DEMO-COLOR-A' },
+    { id: 'a2', timestamp: t(13), event: 'Image captured',             actor: operatorId, category: 'OPERATOR',  detail: 'Demo capture mode' },
+    { id: 'a3', timestamp: t(15), event: 'Reference card detected',    actor: 'SYSTEM',   category: 'SYSTEM',    detail: 'Confidence: 97%' },
+    { id: 'a4', timestamp: t(17), event: 'Calibration completed',      actor: 'SYSTEM',   category: 'SYSTEM',    detail: 'Status: PASSED, Deviation: 5.2' },
+    { id: 'a5', timestamp: t(20), event: 'Reaction region detected',   actor: 'SYSTEM',   category: 'SYSTEM',    detail: 'Region confidence: 95%' },
+    { id: 'a6', timestamp: t(22), event: 'Colour analysis completed',  actor: 'SYSTEM',   category: 'SYSTEM',    detail: 'Color distance: 12.4' },
+    { id: 'a7', timestamp: t(24), event: 'Result generated',           actor: 'SYSTEM',   category: 'SYSTEM',    detail: 'PRESUMPTIVE_POSITIVE, Confidence: 94%' },
+    { id: 'a8', timestamp: t(25), event: 'Evidence sealed',            actor: 'SYSTEM',   category: 'INTEGRITY', detail: 'SHA-256 hash computed' },
+  ];
+}
+
+const baseTime1 = Date.now() - 1000 * 60 * 60 * 3; // 3 hrs ago
+const baseTime2 = Date.now() - 1000 * 60 * 60 * 2; // 2 hrs ago
+const baseTime3 = Date.now() - 1000 * 60 * 45;     // 45 min ago
+const baseTime4 = Date.now() - 1000 * 60 * 20;     // 20 min ago
+
+export const DEMO_RECORDS: EvidencePackage[] = [
+  {
+    testId: 'FP-2026-00481',
+    protocolId: 'DEMO-COLOR-A',
+    protocolName: 'Demo Colorimetric Test A',
+    operatorId: 'OP-104',
+    sessionId: 'SES-0029',
+    deviceId: 'DEV-A7',
+    timestamp: new Date(baseTime1).toISOString(),
+    timestampIST: '11:02:18 IST',
+    location: 'Demo Field Unit – Alpha',
+    result: 'PRESUMPTIVE_POSITIVE',
+    resultLabel: 'Presumptive Positive',
+    confidence: 94,
+    imageHash: '8F31A1B7C4D2E09F3A5B7C8D9E0F1A2B3C4D5E6F7A8B9C0D1E2F3A4B5C6D7E8',
+    metadataHash: 'A1B2C3D4E5F6A7B8C9D0E1F2A3B4C5D6E7F8A9B0C1D2E3F4A5B6C7D8E9F0A1B2',
+    evidenceHash: '3F7A2B9C1D4E5F6A7B8C0D9E1F2A3B4C5D6E7F8A9B0C1D2E3F4A5B6C7D8E9C921',
+    calibrationStatus: 'PASSED',
+    calibrationResult: {
+      status: 'PASSED', overallDeviation: 5.2, qualityLabel: 'GOOD',
+      message: 'Colour calibration successful. Results are reliable.',
+      correctionMatrix: [[1,0,0],[0,1,0],[0,0,1]],
+      patches: [
+        { patchId: 'P01', label: 'Patch 01 – White Reference', expectedHex: '#F5F5F0', capturedHex: '#F2F3ED', expectedRGB: [245,245,240], capturedRGB: [242,243,237], deviation: 4.2 },
+        { patchId: 'P02', label: 'Patch 02 – Neutral Grey',    expectedHex: '#9E9E9E', capturedHex: '#A1A0A2', expectedRGB: [158,158,158], capturedRGB: [161,160,162], deviation: 3.6 },
+        { patchId: 'P03', label: 'Patch 03 – Deep Charcoal',  expectedHex: '#424242', capturedHex: '#454447', expectedRGB: [66,66,66],    capturedRGB: [69,68,71],    deviation: 4.6 },
+        { patchId: 'P04', label: 'Patch 04 – Reference Red',  expectedHex: '#C62828', capturedHex: '#C92B2A', expectedRGB: [198,40,40],   capturedRGB: [201,43,42],   delegation: 4.5, deviation: 4.5 },
+        { patchId: 'P05', label: 'Patch 05 – Reference Blue', expectedHex: '#1565C0', capturedHex: '#1768C3', expectedRGB: [21,101,192],  capturedRGB: [23,104,195],  deviation: 4.1 },
+      ] as any,
+    },
+    imageQualityScore: 92,
+    imageQualityMetrics: {
+      sharpness: 94, brightness: 88, contrast: 91, glare: 89, referenceVisibility: 97,
+      testRegionVisibility: 93, alignment: 96, overallScore: 92,
+      status: 'ACCEPTABLE', message: 'Capture quality is sufficient for analysis.',
+    },
+    colorFeatures: {
+      dominantHex: '#8E44AD', dominantRGB: [142, 68, 173],
+      calibratedHex: '#8B42A9', calibratedRGB: [139, 66, 169],
+      colorDistance: 12.4,
+      matchedRange: { resultLabel: 'PRESUMPTIVE_POSITIVE', minDistance: 0, maxDistance: 18, colorDescription: 'Purple to Black', colorHex: '#6A0DAD' },
+    },
+    confidenceBreakdown: {
+      colorMatch: 95, calibrationQuality: 92, imageQuality: 92, regionDetection: 95, referenceCardConfidence: 97, overall: 94,
+      explanation: 'Overall confidence is 94%. Colour match (95%), calibration quality (92%), and image quality (92%) all contributed to this assessment.',
+    },
+    analysisVersion: '1.0.0',
+    softwareVersion: '1.0.0',
+    evidenceStatus: 'SEALED',
+    verificationStatus: 'VERIFIED',
+    auditTrail: fakeAudit(baseTime1, 'OP-104'),
+    recommendedAction: 'Submit specimen for laboratory confirmation. Document chain of custody.',
+    disclaimer: 'IMPORTANT: This is a PRESUMPTIVE FIELD RESULT produced by an AI-assisted colorimetric analysis tool. This result is NOT a laboratory confirmation.',
+  },
+
+  {
+    testId: 'FP-2026-00479',
+    protocolId: 'DEMO-COLOR-B',
+    protocolName: 'Demo Colorimetric Test B',
+    operatorId: 'OP-107',
+    sessionId: 'SES-0028',
+    deviceId: 'DEV-B3',
+    timestamp: new Date(baseTime2).toISOString(),
+    timestampIST: '12:32:44 IST',
+    location: 'Demo Field Unit – Beta',
+    result: 'PRESUMPTIVE_NEGATIVE',
+    resultLabel: 'Presumptive Negative',
+    confidence: 88,
+    imageHash: 'B2C3D4E5F6A7B8C9D0E1F2A3B4C5D6E7F8A9B0C1D2E3F4A5B6C7D8E9F0A1B2C3',
+    metadataHash: 'C4D5E6F7A8B9C0D1E2F3A4B5C6D7E8F9A0B1C2D3E4F5A6B7C8D9E0F1A2B3C4D5',
+    evidenceHash: 'D6E7F8A9B0C1D2E3F4A5B6C7D8E9F0A1B2C3D4E5F6A7B8C9D0E1F2A3B4C5D6E7',
+    calibrationStatus: 'PASSED',
+    calibrationResult: {
+      status: 'PASSED', overallDeviation: 6.8, qualityLabel: 'GOOD',
+      message: 'Colour calibration successful. Results are reliable.',
+      correctionMatrix: [[1,0,0],[0,1,0],[0,0,1]],
+      patches: [],
+    },
+    imageQualityScore: 87,
+    imageQualityMetrics: {
+      sharpness: 89, brightness: 84, contrast: 88, glare: 86, referenceVisibility: 91,
+      testRegionVisibility: 87, alignment: 89, overallScore: 87,
+      status: 'ACCEPTABLE', message: 'Capture quality is sufficient for analysis.',
+    },
+    colorFeatures: {
+      dominantHex: '#F57C00', dominantRGB: [245, 124, 0],
+      calibratedHex: '#F47B00', calibratedRGB: [244, 123, 0],
+      colorDistance: 52,
+      matchedRange: { resultLabel: 'PRESUMPTIVE_NEGATIVE', minDistance: 29, maxDistance: 150, colorDescription: 'Clear or yellow (no reaction)', colorHex: '#FFF9C4' },
+    },
+    confidenceBreakdown: {
+      colorMatch: 91, calibrationQuality: 88, imageQuality: 87, regionDetection: 90, referenceCardConfidence: 92, overall: 88,
+      explanation: 'Overall confidence is 88%. Colour measurement clearly falls within the validated negative reference range.',
+    },
+    analysisVersion: '1.0.0',
+    softwareVersion: '1.0.0',
+    evidenceStatus: 'SEALED',
+    verificationStatus: 'UNVERIFIED',
+    auditTrail: fakeAudit(baseTime2, 'OP-107'),
+    recommendedAction: 'Result indicates no presumptive positive reaction. Standard documentation applies.',
+    disclaimer: 'IMPORTANT: This is a PRESUMPTIVE FIELD RESULT produced by an AI-assisted colorimetric analysis tool.',
+  },
+
+  {
+    testId: 'FP-2026-00477',
+    protocolId: 'DEMO-COLOR-A',
+    protocolName: 'Demo Colorimetric Test A',
+    operatorId: 'OP-104',
+    sessionId: 'SES-0027',
+    deviceId: 'DEV-A7',
+    timestamp: new Date(baseTime3).toISOString(),
+    timestampIST: '13:45:00 IST',
+    location: 'Demo Field Unit – Alpha',
+    result: 'INCONCLUSIVE',
+    resultLabel: 'Inconclusive',
+    confidence: 51,
+    imageHash: 'E8F9A0B1C2D3E4F5A6B7C8D9E0F1A2B3C4D5E6F7A8B9C0D1E2F3A4B5C6D7E8F9',
+    metadataHash: 'A0B1C2D3E4F5A6B7C8D9E0F1A2B3C4D5E6F7A8B9C0D1E2F3A4B5C6D7E8F9A0B1',
+    evidenceHash: 'B2C3D4E5F6A7B8C9D0E1F2A3B4C5D6E7F8A9B0C1D2E3F4A5B6C7D8E9F0A1B2C3',
+    calibrationStatus: 'PASSED',
+    calibrationResult: {
+      status: 'PASSED', overallDeviation: 9.1, qualityLabel: 'GOOD',
+      message: 'Colour calibration successful. Results are reliable.',
+      correctionMatrix: [[1,0,0],[0,1,0],[0,0,1]],
+      patches: [],
+    },
+    imageQualityScore: 79,
+    imageQualityMetrics: {
+      sharpness: 77, brightness: 75, contrast: 80, glare: 78, referenceVisibility: 84,
+      testRegionVisibility: 79, alignment: 81, overallScore: 79,
+      status: 'MARGINAL', message: 'Image quality is marginal. Results may have reduced reliability.',
+    },
+    colorFeatures: {
+      dominantHex: '#795548', dominantRGB: [121, 85, 72],
+      calibratedHex: '#7B5748', calibratedRGB: [123, 87, 72],
+      colorDistance: 24,
+      matchedRange: { resultLabel: 'INCONCLUSIVE', minDistance: 19, maxDistance: 30, colorDescription: 'Intermediate colour — inconclusive zone', colorHex: '#795548' },
+    },
+    confidenceBreakdown: {
+      colorMatch: 54, calibrationQuality: 85, imageQuality: 79, regionDetection: 83, referenceCardConfidence: 89, overall: 51,
+      explanation: 'Overall confidence is 51%. The colour measurement falls between validated positive and negative ranges.',
+    },
+    analysisVersion: '1.0.0',
+    softwareVersion: '1.0.0',
+    evidenceStatus: 'SEALED',
+    verificationStatus: 'UNVERIFIED',
+    auditTrail: fakeAudit(baseTime3, 'OP-104'),
+    recommendedAction: 'Observed colour falls between validated reference ranges. Repeat field test or submit for laboratory confirmation.',
+    disclaimer: 'IMPORTANT: This is a PRESUMPTIVE FIELD RESULT produced by an AI-assisted colorimetric analysis tool.',
+  },
+
+  {
+    testId: 'FP-2026-00475',
+    protocolId: 'DEMO-COLOR-A',
+    protocolName: 'Demo Colorimetric Test A',
+    operatorId: 'OP-112',
+    sessionId: 'SES-0026',
+    deviceId: 'DEV-C1',
+    timestamp: new Date(baseTime4).toISOString(),
+    timestampIST: '14:30:12 IST',
+    location: 'Demo Field Unit – Gamma',
+    result: 'PRESUMPTIVE_POSITIVE',
+    resultLabel: 'Presumptive Positive',
+    confidence: 91,
+    imageHash: 'F0A1B2C3D4E5F6A7B8C9D0E1F2A3B4C5D6E7F8A9B0C1D2E3F4A5B6C7D8E9F0A1',
+    metadataHash: 'A2B3C4D5E6F7A8B9C0D1E2F3A4B5C6D7E8F9A0B1C2D3E4F5A6B7C8D9E0F1A2B3',
+    evidenceHash: 'B4C5D6E7F8A9B0C1D2E3F4A5B6C7D8E9F0A1B2C3D4E5F6A7B8C9D0E1F2A3B4C5',
+    calibrationStatus: 'PASSED',
+    calibrationResult: {
+      status: 'PASSED', overallDeviation: 7.3, qualityLabel: 'GOOD',
+      message: 'Colour calibration successful. Results are reliable.',
+      correctionMatrix: [[1,0,0],[0,1,0],[0,0,1]],
+      patches: [],
+    },
+    imageQualityScore: 89,
+    imageQualityMetrics: {
+      sharpness: 91, brightness: 86, contrast: 90, glare: 88, referenceVisibility: 94,
+      testRegionVisibility: 88, alignment: 92, overallScore: 89,
+      status: 'ACCEPTABLE', message: 'Capture quality is sufficient for analysis.',
+    },
+    colorFeatures: {
+      dominantHex: '#7B1FA2', dominantRGB: [123, 31, 162],
+      calibratedHex: '#7C20A3', calibratedRGB: [124, 32, 163],
+      colorDistance: 14.1,
+      matchedRange: { resultLabel: 'PRESUMPTIVE_POSITIVE', minDistance: 0, maxDistance: 18, colorDescription: 'Purple to Black', colorHex: '#6A0DAD' },
+    },
+    confidenceBreakdown: {
+      colorMatch: 93, calibrationQuality: 90, imageQuality: 89, regionDetection: 93, referenceCardConfidence: 94, overall: 91,
+      explanation: 'Overall confidence is 91%. Colour match (93%), calibration quality (90%), and image quality (89%) all contributed to this assessment.',
+    },
+    analysisVersion: '1.0.0',
+    softwareVersion: '1.0.0',
+    evidenceStatus: 'SEALED',
+    verificationStatus: 'UNVERIFIED',
+    auditTrail: fakeAudit(baseTime4, 'OP-112'),
+    recommendedAction: 'Submit specimen for laboratory confirmation. Document chain of custody.',
+    disclaimer: 'IMPORTANT: This is a PRESUMPTIVE FIELD RESULT produced by an AI-assisted colorimetric analysis tool.',
+  },
+];

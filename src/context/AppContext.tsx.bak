@@ -1,0 +1,134 @@
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import type {
+  Operator,
+  EvidencePackage,
+  TestSession,
+  DashboardStats,
+} from '../types';
+import { DEMO_RECORDS } from '../data/demoTests';
+
+interface AppContextValue {
+  // Auth
+  operator: Operator | null;
+  login: (operatorId: string, name: string) => void;
+  logout: () => void;
+
+  // Evidence records
+  records: EvidencePackage[];
+  addRecord: (record: EvidencePackage) => void;
+  updateRecord: (testId: string, updates: Partial<EvidencePackage>) => void;
+  getRecord: (testId: string) => EvidencePackage | undefined;
+
+  // Active session
+  activeSession: TestSession | null;
+  setActiveSession: (session: TestSession | null) => void;
+  updateSession: (updates: Partial<TestSession>) => void;
+
+  // Dashboard stats
+  stats: DashboardStats;
+
+  // Demo tamper mode (for WOW moment)
+  tamperedRecordId: string | null;
+  setTamperedRecordId: (id: string | null) => void;
+}
+
+const AppContext = createContext<AppContextValue | null>(null);
+
+export function AppProvider({ children }: { children: React.ReactNode }) {
+  const [operator, setOperator] = useState<Operator | null>(() => {
+    const saved = localStorage.getItem('fp_operator');
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  const [records, setRecords] = useState<EvidencePackage[]>(() => {
+    const saved = localStorage.getItem('fp_records');
+    if (saved) {
+      try { return JSON.parse(saved); } catch { /* ignore */ }
+    }
+    return DEMO_RECORDS;
+  });
+
+  const [activeSession, setActiveSession] = useState<TestSession | null>(null);
+  const [tamperedRecordId, setTamperedRecordId] = useState<string | null>(null);
+
+  // Persist records
+  useEffect(() => {
+    localStorage.setItem('fp_records', JSON.stringify(records));
+  }, [records]);
+
+  // Persist operator
+  useEffect(() => {
+    if (operator) {
+      localStorage.setItem('fp_operator', JSON.stringify(operator));
+    } else {
+      localStorage.removeItem('fp_operator');
+    }
+  }, [operator]);
+
+  const login = useCallback((operatorId: string, name: string) => {
+    const op: Operator = {
+      id: operatorId,
+      name,
+      sessionId: `SES-${uuidv4().slice(0, 6).toUpperCase()}`,
+      deviceId: `DEV-${Math.random().toString(36).slice(2, 5).toUpperCase()}`,
+      role: 'Field Operator',
+      loginTime: new Date().toISOString(),
+    };
+    setOperator(op);
+  }, []);
+
+  const logout = useCallback(() => {
+    setOperator(null);
+    setActiveSession(null);
+  }, []);
+
+  const addRecord = useCallback((record: EvidencePackage) => {
+    setRecords(prev => [record, ...prev]);
+  }, []);
+
+  const updateRecord = useCallback((testId: string, updates: Partial<EvidencePackage>) => {
+    setRecords(prev =>
+      prev.map(r => r.testId === testId ? { ...r, ...updates } : r)
+    );
+  }, []);
+
+  const getRecord = useCallback((testId: string) => {
+    return records.find(r => r.testId === testId);
+  }, [records]);
+
+  const updateSession = useCallback((updates: Partial<TestSession>) => {
+    setActiveSession(prev => prev ? { ...prev, ...updates } : null);
+  }, []);
+
+  const stats: DashboardStats = {
+    totalTests: records.length,
+    todayTests: records.filter(r => {
+      const d = new Date(r.timestamp);
+      const now = new Date();
+      return d.toDateString() === now.toDateString();
+    }).length,
+    presumptivePositive: records.filter(r => r.result === 'PRESUMPTIVE_POSITIVE').length,
+    inconclusive: records.filter(r => r.result === 'INCONCLUSIVE').length,
+    evidenceSealed: records.filter(r => r.evidenceStatus === 'SEALED').length,
+    integrityFailures: records.filter(r => r.verificationStatus === 'FAILED').length,
+  };
+
+  return (
+    <AppContext.Provider value={{
+      operator, login, logout,
+      records, addRecord, updateRecord, getRecord,
+      activeSession, setActiveSession, updateSession,
+      stats,
+      tamperedRecordId, setTamperedRecordId,
+    }}>
+      {children}
+    </AppContext.Provider>
+  );
+}
+
+export function useApp(): AppContextValue {
+  const ctx = useContext(AppContext);
+  if (!ctx) throw new Error('useApp must be used within AppProvider');
+  return ctx;
+}
