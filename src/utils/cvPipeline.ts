@@ -1,5 +1,5 @@
 /**
- * FIELDPROOF — Computer Vision Pipeline (Simulated Modular Architecture)
+ * ForensicSaathi — Computer Vision Pipeline (Simulated Modular Architecture)
  *
  * Each function is architectured as a separate module with a well-defined
  * interface, so real CV/ML models can replace the simulated logic later.

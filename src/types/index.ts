@@ -9,6 +9,7 @@ export type PresumptiveResult =
   | 'QUALITY_INSUFFICIENT';
 
 export type EvidenceStatus = 'SEALED' | 'DRAFT' | 'TAMPERED' | 'UNVERIFIED';
+export type ReviewStatus = 'PENDING_REVIEW' | 'APPROVED' | 'REJECTED' | 'ESCALATED';
 export type CalibrationStatus = 'PASSED' | 'FAILED' | 'PENDING' | 'POOR';
 export type PipelineStepStatus = 'pending' | 'running' | 'done' | 'failed' | 'skipped';
 export type VerificationStatus = 'VERIFIED' | 'FAILED' | 'UNVERIFIED' | 'PENDING';
@@ -164,6 +165,13 @@ export interface EvidencePackage {
   auditTrail: AuditEvent[];
   recommendedAction: string;
   disclaimer: string;
+  // Supervisor review (v2)
+  reviewStatus?: ReviewStatus;
+  reviewedBy?: string;
+  reviewedAt?: string;
+  reviewNotes?: string;
+  // Chain of Custody (v2)
+  custodyEvents?: CustodyEvent[];
 }
 
 // ─── Audit ────────────────────────────────────────────────────────────────────
@@ -198,6 +206,19 @@ export interface VerificationCheck {
   label: string;
   passed: boolean;
   detail: string;
+}
+
+// ─── Chain of Custody ─────────────────────────────────────────────────────────
+
+export interface CustodyEvent {
+  id: string;
+  timestamp: string;
+  action: string;
+  actor: string;
+  role: string;
+  location?: string;
+  notes?: string;
+  category: 'COLLECTION' | 'TRANSFER' | 'ANALYSIS' | 'STORAGE' | 'VERIFICATION' | 'REVIEW' | 'DISPOSAL';
 }
 
 // ─── App State ────────────────────────────────────────────────────────────────

@@ -39,7 +39,7 @@ export default function LoginPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-600/20 border border-indigo-500/30 mb-4">
             <Shield className="w-8 h-8 text-indigo-400" />
           </div>
-          <h1 className="text-2xl font-bold tracking-widest text-slate-100 font-mono">FIELDPROOF</h1>
+          <h1 className="text-2xl font-bold tracking-widest text-slate-100 font-mono">ForensicSaathi</h1>
           <p className="text-sm text-slate-500 mt-1">Evidence Integrity Engine</p>
           <p className="text-xs text-indigo-400/60 mt-0.5 font-mono">SIH 2026 · PS-26231</p>
         </div>
@@ -117,7 +117,7 @@ export default function LoginPage() {
           {/* Demo hint */}
           <div className="mt-4 p-3 rounded-lg bg-indigo-900/10 border border-indigo-700/20">
             <p className="text-[11px] text-indigo-400/80 font-mono leading-relaxed">
-              Demo: <strong className="text-indigo-300">fieldoperator</strong> / <strong className="text-indigo-300">FieldProof@2026!</strong>
+              Demo: <strong className="text-indigo-300">fieldoperator</strong> / <strong className="text-indigo-300">ForensicSaathi@2026!</strong>
             </p>
           </div>
 
@@ -136,7 +136,7 @@ export default function LoginPage() {
             <div className="flex items-start gap-2">
               <AlertTriangle className="w-3.5 h-3.5 text-amber-500/70 flex-shrink-0 mt-0.5" />
               <p className="text-[11px] text-slate-600 leading-relaxed">
-                FIELDPROOF produces <strong className="text-amber-500/70">presumptive field results only</strong>.
+                ForensicSaathi produces <strong className="text-amber-500/70">presumptive field results only</strong>.
                 All results must be confirmed by an accredited laboratory before enforcement action.
                 This system is a demonstration prototype for SIH 2026.
               </p>

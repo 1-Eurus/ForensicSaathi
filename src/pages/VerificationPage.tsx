@@ -136,7 +136,7 @@ export default function VerificationPage() {
           <span className="text-slate-300">Tamper Detection Demo</span>
         </div>
         <h1 className="text-xl font-bold text-slate-100">Evidence Integrity — WOW Demo</h1>
-        <p className="text-sm text-slate-500 mt-0.5">See how FIELDPROOF detects evidence tampering in real-time</p>
+        <p className="text-sm text-slate-500 mt-0.5">See how ForensicSaathi detects evidence tampering in real-time</p>
       </div>
 
       {/* Progress steps */}
@@ -222,7 +222,7 @@ export default function VerificationPage() {
                   <div className="text-sm font-medium text-amber-300 mb-1">Demo Only — Simulated Tampering</div>
                   <p className="text-xs text-amber-400/70 leading-relaxed">
                     In a real corruption attempt, an adversary might alter the stored result (e.g. change "Presumptive Positive"
-                    to "Presumptive Negative") without updating the SHA-256 hash. FIELDPROOF detects this by recomputing and comparing.
+                    to "Presumptive Negative") without updating the SHA-256 hash. ForensicSaathi detects this by recomputing and comparing.
                   </p>
                 </div>
               </div>
@@ -268,7 +268,7 @@ export default function VerificationPage() {
             <VerificationReportView report={report} loading={false} />
             <div className="pt-3 border-t border-slate-700/30">
               <div className="text-xs text-slate-500 text-center mb-3">
-                ✓ Demo complete — FIELDPROOF successfully detected the tampering via SHA-256 hash mismatch.
+                ✓ Demo complete — ForensicSaathi successfully detected the tampering via SHA-256 hash mismatch.
               </div>
               <div className="flex gap-2">
                 <button onClick={() => navigate('/dashboard')} className="btn-secondary flex-1 text-sm justify-center">← Dashboard</button>

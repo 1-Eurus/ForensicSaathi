@@ -1,5 +1,5 @@
 /**
- * FIELDPROOF — Hash & Tamper-Evidence Utilities
+ * ForensicSaathi — Hash & Tamper-Evidence Utilities
  * Uses the Web Crypto API (SHA-256) for real cryptographic hashing.
  */
 
@@ -37,7 +37,7 @@ export async function hashMetadata(fields: Record<string, string | number | bool
  * image hash and the metadata hash together.
  */
 export async function computeEvidenceHash(imageHash: string, metadataHash: string): Promise<string> {
-  return sha256(`FIELDPROOF:${imageHash}:${metadataHash}`);
+  return sha256(`ForensicSaathi:${imageHash}:${metadataHash}`);
 }
 
 /**

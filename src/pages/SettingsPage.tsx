@@ -22,7 +22,7 @@ export default function SettingsPage() {
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {[
-            { label: 'Version', value: 'FIELDPROOF v1.0.0' },
+            { label: 'Version', value: 'ForensicSaathi v1.0.0' },
             { label: 'Problem Statement', value: 'PS-26231' },
             { label: 'Hackathon', value: 'SIH 2026' },
             { label: 'Hash Algorithm', value: 'SHA-256 (Web Crypto API)' },
@@ -209,7 +209,7 @@ function PrivacySecuritySection() {
     {
       icon: <Shield className="w-4 h-4 text-slate-400" />,
       title: 'Disclaimer',
-      description: 'FIELDPROOF is a prototype for SIH 2026 (PS-26231). It is not a production security system. Security measures are implemented to demonstrate best practices for hackathon evaluation purposes.',
+      description: 'ForensicSaathi is a prototype for SIH 2026 (PS-26231). It is not a production security system. Security measures are implemented to demonstrate best practices for hackathon evaluation purposes.',
       badge: 'SIH 2026 · Demo Prototype',
       badgeColor: 'text-slate-400 bg-slate-800/40 border-slate-700/30',
     },

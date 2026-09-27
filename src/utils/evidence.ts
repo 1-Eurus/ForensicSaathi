@@ -1,5 +1,5 @@
 /**
- * FIELDPROOF — Evidence Package Builder & Verification
+ * ForensicSaathi — Evidence Package Builder & Verification
  *
  * sealEvidence() — creates a cryptographically-hashed, tamper-evident record
  * verifyEvidence() — recomputes hashes and checks integrity

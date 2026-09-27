@@ -11,6 +11,8 @@ import VerificationPage from './pages/VerificationPage';
 import HistoryPage from './pages/HistoryPage';
 import AuditPage from './pages/AuditPage';
 import SettingsPage from './pages/SettingsPage';
+import SupervisorReviewPage from './pages/SupervisorReviewPage';
+import ChainOfCustodyPage from './pages/ChainOfCustodyPage';
 import { Shield } from 'lucide-react';
 
 /** Redirects to /login when no user is authenticated; shows spinner during auth check */
@@ -50,6 +52,9 @@ function AppRoutes() {
           <Route path="/history"      element={<HistoryPage />} />
           <Route path="/audit"        element={<AuditPage />} />
           <Route path="/settings"     element={<SettingsPage />} />
+          <Route path="/review"       element={<SupervisorReviewPage />} />
+          <Route path="/custody"      element={<ChainOfCustodyPage />} />
+          <Route path="/custody/:testId" element={<ChainOfCustodyPage />} />
         </Route>
       </Route>
 

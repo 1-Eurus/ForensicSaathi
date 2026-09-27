@@ -1,5 +1,5 @@
 /**
- * FIELDPROOF — New Field Test Page (v2)
+ * ForensicSaathi — New Field Test Page (v2)
  * Dual-image capture (test sample + reference card), real GPS, 10-stage CV pipeline,
  * SHA-256 hashing of both images, environment consistency scoring.
  */
@@ -9,8 +9,9 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   ChevronRight, ChevronLeft, FlaskConical, User,
   MapPin, Camera, Check, Shield, Image, AlertTriangle,
-  Navigation, WifiOff, Layers,
+  Navigation, WifiOff, Layers, Download,
 } from 'lucide-react';
+import { generateEvidencePDF } from '../utils/generatePDF';
 import { useApp } from '../context/AppContext';
 import { PROTOCOLS } from '../data/protocols';
 import { CameraCapture } from '../components/Test/CameraCapture';
@@ -406,9 +407,19 @@ export default function NewTestPage() {
             <h1 className="text-xl font-bold text-slate-100">Analysis Complete</h1>
             <p className="text-sm text-slate-500">Evidence sealed and saved to database</p>
           </div>
-          <button className="btn-primary text-sm" onClick={() => navigate('/dashboard')}>
-            Dashboard
-          </button>
+          <div className="flex gap-2">
+            {pipelineResult.evidence && (
+              <button
+                className="btn-secondary text-sm"
+                onClick={() => generateEvidencePDF(pipelineResult.evidence)}
+              >
+                <Download className="w-4 h-4" /> Export PDF
+              </button>
+            )}
+            <button className="btn-primary text-sm" onClick={() => navigate('/dashboard')}>
+              Dashboard
+            </button>
+          </div>
         </div>
 
         {pipelineResult.evidence && (
@@ -633,7 +644,7 @@ export default function NewTestPage() {
               <span className="text-xs font-semibold text-slate-400">About Dual-Image Capture</span>
             </div>
             <p className="text-[11px] text-slate-600 leading-relaxed">
-              FIELDPROOF v2 requires two images captured under the same lighting: (1) the test sample,
+              ForensicSaathi v2 requires two images captured under the same lighting: (1) the test sample,
               and (2) a colour reference card. The system verifies both were captured in consistent
               environmental conditions and generates separate SHA-256 hashes for each. Both hashes
               are combined into a single tamper-evident evidence seal.

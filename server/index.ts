@@ -1,5 +1,5 @@
 /**
- * FIELDPROOF — Backend Server (v2 — sqlite + sqlite3 async)
+ * ForensicSaathi — Backend Server (v2 — sqlite + sqlite3 async)
  * Express + sqlite/sqlite3 + bcryptjs + JWT
  *
  * Run: tsx server/index.ts   (or: concurrently "tsx server/index.ts" "vite")
@@ -20,8 +20,8 @@ dotenv.config();
 
 // ─── Config ──────────────────────────────────────────────────────────────────
 const PORT = parseInt(process.env.PORT || '3001', 10);
-const JWT_SECRET = process.env.SESSION_SECRET || 'FIELDPROOF_DEV_SECRET_CHANGE_IN_PRODUCTION';
-const DB_PATH = process.env.DB_PATH || path.join(process.cwd(), 'data', 'fieldproof.db');
+const JWT_SECRET = process.env.SESSION_SECRET || 'ForensicSaathi_DEV_SECRET_CHANGE_IN_PRODUCTION';
+const DB_PATH = process.env.DB_PATH || path.join(process.cwd(), 'data', 'forensicsaathi.db');
 const BCRYPT_ROUNDS = 12;
 const TOKEN_TTL = '8h';
 
@@ -114,15 +114,15 @@ async function seedDemoUser() {
   const existing = await db.get('SELECT id FROM users WHERE username = ?', ['fieldoperator']);
   if (existing) return;
 
-  const hash = await bcrypt.hash('FieldProof@2026!', BCRYPT_ROUNDS);
+  const hash = await bcrypt.hash('ForensicSaathi@2026!', BCRYPT_ROUNDS);
   const now = new Date().toISOString();
   await db.run(
     `INSERT INTO users (id,username,email,password_hash,full_name,operator_id,role,created_at,updated_at)
      VALUES (?,?,?,?,?,?,?,?,?)`,
-    [uid(), 'fieldoperator', 'demo@fieldproof.gov', hash,
+    [uid(), 'fieldoperator', 'demo@forensicsaathi.gov', hash,
      'Field Operator Demo', 'OP-104', 'FIELD_OPERATOR', now, now]
   );
-  console.log('[SEED] Demo account created: fieldoperator / FieldProof@2026!');
+  console.log('[SEED] Demo account created: fieldoperator / ForensicSaathi@2026!');
 }
 
 async function generateTestId(): Promise<string> {
@@ -520,7 +520,7 @@ app.get('/api/health', (_req, res) => {
 initDB()
   .then(() => {
     app.listen(PORT, '127.0.0.1', () => {
-      console.log(`\n🛡  FIELDPROOF API  →  http://127.0.0.1:${PORT}`);
+      console.log(`\n🛡  ForensicSaathi API  →  http://127.0.0.1:${PORT}`);
       console.log(`   DB:  ${DB_PATH}`);
       console.log(`   JWT: ${TOKEN_TTL} TTL\n`);
     });

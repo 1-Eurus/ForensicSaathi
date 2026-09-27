@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronRight, ShieldCheck, Activity, AlertTriangle, Loader2 } from 'lucide-react';
+import { ChevronRight, ShieldCheck, Activity, AlertTriangle, Loader2, Download } from 'lucide-react';
+import { generateEvidencePDF } from '../utils/generatePDF';
 import { useApp } from '../context/AppContext';
 import { EvidenceCard } from '../components/Evidence/EvidenceCard';
 import { AuditTimeline } from '../components/Evidence/AuditTimeline';
@@ -79,6 +80,9 @@ export default function TestDetailPage() {
           <p className="text-xs text-slate-500 mt-0.5">{record.protocolId} · {record.location} · {record.operatorId}</p>
         </div>
         <div className="flex gap-2">
+          <button onClick={() => generateEvidencePDF(record)} className="btn-secondary text-xs">
+            <Download className="w-3.5 h-3.5" /> Export PDF
+          </button>
           <button onClick={handleVerify} className="btn-primary text-xs">
             <ShieldCheck className="w-3.5 h-3.5" /> Verify Integrity
           </button>

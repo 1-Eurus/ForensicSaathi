@@ -1,5 +1,5 @@
 /**
- * FIELDPROOF — Frontend API client
+ * ForensicSaathi — Frontend API client
  * All calls go to /api (proxied to Express on port 3001 by Vite).
  * Token is stored in localStorage under 'fp_token'.
  */
@@ -11,11 +11,11 @@ export const TOKEN_KEY = 'fp_token';
 // intercept the network error and return hardcoded demo data so the full UI
 // is explorable without a server.
 
-const DEMO_TOKEN = 'FIELDPROOF_DEMO_OFFLINE_TOKEN';
+const DEMO_TOKEN = 'ForensicSaathi_DEMO_OFFLINE_TOKEN';
 const DEMO_USER: FPUser = {
   id: 'demo-user-fp-001',
   username: 'fieldoperator',
-  email: 'fieldoperator@fieldproof.sih',
+  email: 'fieldoperator@forensicsaathi.sih',
   full_name: 'Demo Field Operator',
   operator_id: 'OP-104',
   role: 'FIELD_OPERATOR',
@@ -23,21 +23,40 @@ const DEMO_USER: FPUser = {
   last_login_at: new Date().toISOString(),
 };
 
+// In-memory flag so demo mode works even when localStorage is blocked
+// (e.g. inside a sandboxed artifact iframe).
+let _demoMode = false;
+
 function isDemoToken(): boolean {
+  if (_demoMode) return true;
   try { return localStorage.getItem(TOKEN_KEY) === DEMO_TOKEN; } catch { return false; }
 }
 
-function demoFallback<T>(path: string, opts: RequestInit, originalErr: unknown): T {
+function activateDemo() {
+  _demoMode = true;
+  try { localStorage.setItem(TOKEN_KEY, DEMO_TOKEN); } catch {}
+}
+
+function demoFallback<T>(path: string, opts: RequestInit, originalErr: unknown, isNetworkError = false): T {
   // Login — only accept the demo credentials
   if (path === '/auth/login' && opts.method === 'POST') {
     const body = JSON.parse((opts.body as string) ?? '{}');
-    if (body.username === 'fieldoperator' && body.password === 'FieldProof@2026!') {
+    if (body.username === 'fieldoperator' && body.password === 'ForensicSaathi@2026!') {
+      activateDemo();
       return { token: DEMO_TOKEN, user: DEMO_USER } as unknown as T;
     }
-    throw new Error('Invalid credentials (demo mode: use fieldoperator / FieldProof@2026!)');
+    throw new Error('Invalid credentials (demo mode: use fieldoperator / ForensicSaathi@2026!)');
   }
 
-  // All other routes require the demo token
+  // /auth/me on startup when the server is completely unreachable (network error,
+  // not an HTTP 401) — auto-activate demo mode so the app boots without a login
+  // screen in the artifact preview / offline context.
+  if (path === '/auth/me' && isNetworkError) {
+    activateDemo();
+    return { user: DEMO_USER } as unknown as T;
+  }
+
+  // All other routes require an active demo session
   if (!isDemoToken()) throw originalErr;
 
   if (path === '/auth/me') return { user: DEMO_USER } as unknown as T;
@@ -88,13 +107,13 @@ async function request<T = unknown>(
     const body = await res.json().catch(() => ({}));
 
     if (!res.ok) {
-      // Try demo fallback for auth errors too (e.g. invalid token in preview)
-      return demoFallback<T>(path, opts, new Error((body as any)?.error ?? `Request failed: ${res.status}`));
+      // HTTP error (server reachable but returned non-2xx) → demo fallback
+      return demoFallback<T>(path, opts, new Error((body as any)?.error ?? `Request failed: ${res.status}`), false);
     }
     return body as T;
   } catch (err) {
-    // Network error (backend unreachable) → demo fallback
-    return demoFallback<T>(path, opts, err);
+    // Network error (backend completely unreachable) → demo fallback with flag
+    return demoFallback<T>(path, opts, err, true);
   }
 }
 

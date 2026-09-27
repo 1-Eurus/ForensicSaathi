@@ -3,28 +3,44 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import {
   Shield, LayoutDashboard, FlaskConical, History,
   FileSearch, ClipboardList, Settings, LogOut,
-  ChevronRight, Wifi, Clock
+  ChevronRight, Wifi, Clock, ClipboardCheck, Link2
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { format } from 'date-fns';
 
-const NAV = [
-  { to: '/dashboard',    icon: LayoutDashboard, label: 'Command Centre' },
-  { to: '/new-test',     icon: FlaskConical,    label: 'New Field Test' },
-  { to: '/history',      icon: History,         label: 'Test History' },
-  { to: '/audit',        icon: ClipboardList,   label: 'Audit Trail' },
-  { to: '/verify',       icon: FileSearch,      label: 'Verify Evidence' },
-  { to: '/settings',     icon: Settings,        label: 'Protocols & Settings' },
+const BASE_NAV = [
+  { to: '/dashboard',    icon: LayoutDashboard, label: 'Command Centre',       badge: null },
+  { to: '/new-test',     icon: FlaskConical,    label: 'New Field Test',       badge: null },
+  { to: '/history',      icon: History,         label: 'Test History',         badge: null },
+  { to: '/audit',        icon: ClipboardList,   label: 'Audit Trail',          badge: null },
+  { to: '/verify',       icon: FileSearch,      label: 'Verify Evidence',      badge: null },
+  { to: '/review',       icon: ClipboardCheck,  label: 'Supervisor Review',    badge: 'review' },
+  { to: '/custody',      icon: Link2,           label: 'Chain of Custody',     badge: null },
+  { to: '/settings',     icon: Settings,        label: 'Protocols & Settings', badge: null },
 ];
 
 export default function AppShell() {
-  const { operator, logout, stats } = useApp();
+  const { operator, logout, stats, records } = useApp();
   const navigate = useNavigate();
+
+  // Count records pending supervisor review
+  const pendingReviewCount = records.filter(
+    r => !r.reviewStatus && r.evidenceStatus === 'SEALED'
+  ).length;
   const [time, setTime] = React.useState(new Date());
+  const [isOnline, setIsOnline] = React.useState(navigator.onLine);
 
   React.useEffect(() => {
     const t = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(t);
+    const handleOnline  = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener('online',  handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      clearInterval(t);
+      window.removeEventListener('online',  handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
   }, []);
 
   const handleLogout = () => { logout(); navigate('/login'); };
@@ -40,7 +56,7 @@ export default function AppShell() {
               <Shield className="w-5 h-5 text-indigo-400" />
             </div>
             <div>
-              <div className="text-sm font-bold tracking-widest text-slate-100 font-mono">FIELDPROOF</div>
+              <div className="text-sm font-bold tracking-widest text-slate-100 font-mono">ForensicSaathi</div>
               <div className="text-[10px] text-slate-500 tracking-wider">EVIDENCE INTEGRITY ENGINE</div>
             </div>
           </div>
@@ -48,35 +64,43 @@ export default function AppShell() {
 
         {/* Nav */}
         <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
-          {NAV.map(({ to, icon: Icon, label }) => (
-            <NavLink key={to} to={to}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 group ${
-                  isActive
-                    ? 'bg-indigo-600/15 text-indigo-300 border border-indigo-500/20'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-                }`
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-indigo-400' : 'text-slate-500 group-hover:text-slate-400'}`} />
-                  <span className="flex-1">{label}</span>
-                  {isActive && <ChevronRight className="w-3 h-3 text-indigo-400/60" />}
-                </>
-              )}
-            </NavLink>
-          ))}
+          {BASE_NAV.map(({ to, icon: Icon, label, badge }) => {
+            const badgeCount = badge === 'review' ? pendingReviewCount : 0;
+            return (
+              <NavLink key={to} to={to}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 group ${
+                    isActive
+                      ? 'bg-indigo-600/15 text-indigo-300 border border-indigo-500/20'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                  }`
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-indigo-400' : 'text-slate-500 group-hover:text-slate-400'}`} />
+                    <span className="flex-1">{label}</span>
+                    {badgeCount > 0 && (
+                      <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                        {badgeCount}
+                      </span>
+                    )}
+                    {isActive && <ChevronRight className="w-3 h-3 text-indigo-400/60" />}
+                  </>
+                )}
+              </NavLink>
+            );
+          })}
         </nav>
 
         {/* System status */}
         <div className="px-3 py-3 border-t border-slate-800/70 space-y-2">
           <div className="flex items-center justify-between px-2">
             <div className="flex items-center gap-1.5">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-[11px] text-slate-500">System Online</span>
+              <div className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
+              <span className="text-[11px] text-slate-500">{isOnline ? 'System Online' : 'Offline Mode'}</span>
             </div>
-            <div className="flex items-center gap-1 text-[11px] text-slate-500">
+            <div className={`flex items-center gap-1 text-[11px] ${isOnline ? 'text-slate-500' : 'text-amber-400'}`}>
               <Wifi className="w-3 h-3" />
             </div>
           </div>
@@ -101,7 +125,7 @@ export default function AppShell() {
           </div>
           <div className="px-2">
             <div className="flex items-center justify-between text-[10px] text-slate-600">
-              <span>FIELDPROOF v1.0.0</span>
+              <span>ForensicSaathi v1.0.0</span>
               <span>SIH 2026 — PS 26231</span>
             </div>
           </div>

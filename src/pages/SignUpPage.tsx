@@ -129,7 +129,7 @@ export default function SignUpPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-600/20 border border-indigo-500/30 mb-4">
             <Shield className="w-8 h-8 text-indigo-400" />
           </div>
-          <h1 className="text-2xl font-bold tracking-widest text-slate-100 font-mono">FIELDPROOF</h1>
+          <h1 className="text-2xl font-bold tracking-widest text-slate-100 font-mono">ForensicSaathi</h1>
           <p className="text-sm text-slate-500 mt-1">Create Field Operator Account</p>
         </div>
 
